@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class SenderData : MonoBehaviour
 {
-    public string serverURL = "https://tu-servidor.com/api"; // Reemplaza con la URL de tu servidor
+    public string serverURL = "https://citmalumnes.upc.es/~davidbo5/HelloWorldPhP.php"; // Reemplaza con la URL de tu servidor
 
     private void OnEnable()
     {
@@ -33,6 +33,7 @@ public class SenderData : MonoBehaviour
         // Crear una solicitud POST con el formulario
         UnityWebRequest www = UnityWebRequest.Post(serverURL, form);
 
+
         // Enviar la solicitud al servidor
         yield return www.SendWebRequest();
 
@@ -44,15 +45,18 @@ public class SenderData : MonoBehaviour
             CallbackEvents.OnAddPlayerCallback?.Invoke(userId);
 
             Debug.Log("Datos enviados con éxito al servidor.");
+            Debug.Log(www.downloadHandler.text);
+            Debug.Log(www.uri);
+
         }
         else
         {
             // ----------------------------------------------------------------------- TEMPORAL - Això ha de passar només quan es SUCCESS
             //
-                uint userId = 2; // !!!!! TEMPORAL - La ID aquesta ens la inventem
+            //    uint userId = 2; // !!!!! TEMPORAL - La ID aquesta ens la inventem
             //
             //
-                CallbackEvents.OnAddPlayerCallback?.Invoke(userId);
+            //    CallbackEvents.OnAddPlayerCallback?.Invoke(userId);
             //
             // -----------------------------------------------------------
 
