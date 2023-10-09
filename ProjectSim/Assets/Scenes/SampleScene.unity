@@ -431,7 +431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a33468d08c6732468806095787b3d41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverURL: https://tu-servidor.com/api
+  serverURL: https://citmalumnes.upc.es/~davidbo5/HelloWorldPhP.php
 --- !u!114 &2061537444
 MonoBehaviour:
   m_ObjectHideFlags: 0

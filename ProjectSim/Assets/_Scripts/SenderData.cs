@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class SenderData : MonoBehaviour
 {
-    public string serverURL = "https://tu-servidor.com/api"; // Reemplaza con la URL de tu servidor
+    public string serverURL = "https://citmalumnes.upc.es/~davidbo5/"; // Reemplaza con la URL de tu servidor
 
     private void OnEnable()
     {
@@ -24,11 +24,17 @@ public class SenderData : MonoBehaviour
 
     private IEnumerator SendUserDataCoroutine(string name, string country, DateTime date)
     {
+        // Define un formato de fecha personalizado
+        string formatoPersonalizado = "yyyy-MM-dd HH:mm:ss"; // Por ejemplo, "05/10/2023 14:30:00"
+
+        // Convierte la fecha en una cadena con el formato personalizado
+        string fechaFormateada = date.ToString(formatoPersonalizado);
+
         // Crear un formulario para los datos
         WWWForm form = new WWWForm();
         form.AddField("Name", name);
         form.AddField("Country", country);
-        form.AddField("Date", date.ToString());
+        form.AddField("Date", fechaFormateada);
 
         // Crear una solicitud POST con el formulario
         UnityWebRequest www = UnityWebRequest.Post(serverURL, form);
@@ -44,6 +50,7 @@ public class SenderData : MonoBehaviour
             CallbackEvents.OnAddPlayerCallback?.Invoke(userId);
 
             Debug.Log("Datos enviados con éxito al servidor.");
+            Debug.Log(www.downloadHandler.text);
         }
         else
         {
