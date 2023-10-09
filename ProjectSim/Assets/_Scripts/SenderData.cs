@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public class SenderData : MonoBehaviour
 {
-    public string serverURL = "https://citmalumnes.upc.es/~davidbo5/HelloWorldPhP.php"; // Reemplaza con la URL de tu servidor
+    public string serverURL = "https://citmalumnes.upc.es/~davidbo5/ServerPhP.php"; // Reemplaza con la URL de tu servidor
 
     private void OnEnable()
     {
@@ -17,15 +17,15 @@ public class SenderData : MonoBehaviour
         Simulator.OnNewPlayer -= SendData;   
     }
 
-    public void SendData(string name, string country, DateTime date)
+    public void SendData(string name, string country, string gender, int age, DateTime date)
     {
-        StartCoroutine(SendUserDataCoroutine(name, country, date));
+        StartCoroutine(SendUserDataCoroutine(name, country, gender, age, date));
     }
 
-    private IEnumerator SendUserDataCoroutine(string name, string country, DateTime date)
+    private IEnumerator SendUserDataCoroutine(string name, string country, string gender, int age, DateTime date)
     {
         // Define un formato de fecha personalizado
-        string formatoPersonalizado = "yyyy-MM-dd HH:mm:ss"; // Por ejemplo, "05/10/2023 14:30:00"
+        string formatoPersonalizado = "yyyy-MM-dd HH:mm:ss";
 
         // Convierte la fecha en una cadena con el formato personalizado
         string fechaFormateada = date.ToString(formatoPersonalizado);
@@ -33,6 +33,8 @@ public class SenderData : MonoBehaviour
         // Crear un formulario para los datos
         WWWForm form = new WWWForm();
         form.AddField("Name", name);
+        form.AddField("Age", age);
+        form.AddField("Gender", gender);
         form.AddField("Country", country);
         form.AddField("Date", fechaFormateada);
 
@@ -50,7 +52,7 @@ public class SenderData : MonoBehaviour
 
             CallbackEvents.OnAddPlayerCallback?.Invoke(userId);
 
-            Debug.Log("Datos enviados con �xito al servidor.");
+            Debug.Log("Datos enviados con exito al servidor.");
             Debug.Log(www.downloadHandler.text);
 
         }
