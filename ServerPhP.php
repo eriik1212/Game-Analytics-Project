@@ -1,6 +1,4 @@
 <?php
-echo "This is your data!" . "<br>";
-
 // Data base connection
 $server = "localhost";
 $user = "davidbo5";
@@ -14,7 +12,7 @@ if (!$connection) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
+  // ------------------------------------------------------------------------------ USER
   // ---------------------------------------------------- Nombre
     if (isset($_POST["Name"])) {
       $name = $_POST["Name"];
@@ -55,30 +53,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $date = "First Login Date no definido";
     }
 
-    echo "Name: " . htmlspecialchars($name) . "<br>";
-    echo "Age: " . htmlspecialchars($age) . "<br>";
-    echo "Gender: " . htmlspecialchars($gender) . "<br>";
-    echo "Country: " . htmlspecialchars($country) . "<br>";
-    echo "Date: " . htmlspecialchars($date);
-    
     // INSERT INTO
     $sql = "INSERT INTO User(Username, Age, Gender, Country, FirstLoginDate) VALUES ('$name', '$age', '$gender', '$country', '$date')";
 
-
-    if (mysqli_query($connection, $sql)) {
-       echo "Datos insertados correctamente.";
+    if ($connection->query($sql) === TRUE) {
+      // Obtiene la última ID generada
+      $lastUserID = $connection->insert_id;
+  
+      // Imprime la última ID generada
+      echo $lastUserID;
     } else {
-       echo "Error al insertar datos: " . mysqli_error($connection);
+      // Manejar errores de inserción
+      echo "Error al crear el registro: " . $connection->error;
     }
+    
+
+    // ------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------ SESSION
+
+    if (isset($_POST["startSessionTime"])) {
+      $startSessionTime = $_POST["startSessionTime"];
+    } else {
+    // Manejo de la situacion en la que "time" no esto definido en $_POST
+      $startSessionTime = "Start Session Time no definido";
+    }
+
+    // INSERT INTO
+    $sql = "INSERT INTO `Sessions` (`Start`) VALUES ('$startSessionTime')";
+
+    // if ($connection->query($sql) === TRUE) {
+    //   // Obtiene la última ID generada
+    //   $lastSessionID = $connection->insert_id;
+  
+    //   // Imprime la última ID generada
+    //   //echo $lastSessionID;
+    // } else {
+    //   // Manejar errores de inserción
+    //   echo "Error al crear el registro: " . $connection->error;
+    // }
+    // ------------------------------------------------------------------------------
+
     
     // CLOSE
     mysqli_close($connection);
-}
-
-else {
-  echo "<pre>";
-var_dump($_POST);
-echo "</pre>";
-
 }
 ?>
