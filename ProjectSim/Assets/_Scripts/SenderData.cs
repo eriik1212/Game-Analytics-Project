@@ -66,6 +66,7 @@ public class SenderData : MonoBehaviour
             {
                 // La conversión fue exitosa, y valorComoInt contiene el valor entero.
                 CallbackEvents.OnAddPlayerCallback?.Invoke(userId_uInt);
+                Debug.Log(www.downloadHandler.text);
             }
             else
             {
@@ -121,6 +122,8 @@ public class SenderData : MonoBehaviour
             if (www.result == UnityWebRequest.Result.Success)
             {
                 Debug.Log("Datos DEL INICIO DE LA SESION enviados con exito al servidor.");
+
+                CallbackEvents.OnNewSessionCallback?.Invoke(1);
                 Debug.Log(www.downloadHandler.text);
 
                 //string userId_String = www.downloadHandler.text;

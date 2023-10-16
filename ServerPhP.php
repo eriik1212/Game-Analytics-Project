@@ -11,7 +11,7 @@ if (!$connection) {
   die("Error al conectar a la base de datos: " . mysqli_connect_error());
 }
 
-//$lastUserID = null; // Inicializa la variable fuera de los bloques if
+$lastUserID = null; // Inicializa la variable fuera de los bloques if
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   // ------------------------------------------------------------------------------ USER
@@ -38,8 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       }
 
     } 
-
     // ------------------------------------------------------------------------------
+    
     // ------------------------------------------------------------------------------ SESSION
 
     else if (isset($_POST["startSessionTime"]) && isset($_POST["endSessionTime"])) {
