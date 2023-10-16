@@ -6,19 +6,22 @@ using UnityEngine.Networking;
 public class SenderData : MonoBehaviour
 {
     public string serverURL = "https://citmalumnes.upc.es/~davidbo5/ServerPhP.php"; // Reemplaza con la URL de tu servidor
+    private bool startingSessionBool = true;
+    private string startSessionTime;
+    private string endSessionTime;
 
     private void OnEnable()
     {
         Simulator.OnNewPlayer += SendData;
-        Simulator.OnNewSession += SendSessionStartDate;
-        Simulator.OnEndSession += SendSessionEndDate;
-        
+        Simulator.OnNewSession += SendSessionTime;
+        Simulator.OnEndSession += SendSessionTime;
+
     }
     private void OnDisable()
     {
         Simulator.OnNewPlayer -= SendData;
-        Simulator.OnNewSession -= SendSessionStartDate;
-        Simulator.OnEndSession -= SendSessionEndDate;
+        Simulator.OnNewSession -= SendSessionTime;
+        Simulator.OnEndSession -= SendSessionTime;
 
     }
 
@@ -79,22 +82,37 @@ public class SenderData : MonoBehaviour
 
     // --------------------------------------------------------------------------------------------------------------------
     // -------------------------------------------------------------------------------------------------------------------- Send StartSessionTime
-    public void SendSessionStartDate(DateTime startSessionTime)
+    public void SendSessionTime(DateTime sessionTime)
     {
-        StartCoroutine(SendSessionTimeStampStart(startSessionTime));
+        StartCoroutine(SendSessionTimeStamp(sessionTime));
     }
 
-    private IEnumerator SendSessionTimeStampStart(DateTime startSessionTime)
+    private IEnumerator SendSessionTimeStamp(DateTime sessionTime)
     {
         // Define un formato de fecha personalizado
         string formatoPersonalizado = "yyyy-MM-dd HH:mm:ss";
 
         // Convierte la fecha en una cadena con el formato personalizado
-        string fechaFormateada = startSessionTime.ToString(formatoPersonalizado);
+        string fechaFormateada = sessionTime.ToString(formatoPersonalizado);
 
         // Crear un formulario para los datos
         WWWForm form = new WWWForm();
-        form.AddField("startSessionTime", fechaFormateada);
+
+        if (startingSessionBool)
+        {
+            startSessionTime = fechaFormateada;
+            startingSessionBool = false;
+        }
+
+        else
+        {
+            endSessionTime = fechaFormateada;
+            
+            form.AddField("startSessionTime", startSessionTime);
+            form.AddField("endSessionTime", endSessionTime);
+
+            startingSessionBool = true;
+        }
 
         // Crear una solicitud POST con el formulario
         UnityWebRequest www = UnityWebRequest.Post(serverURL, form);
@@ -128,57 +146,6 @@ public class SenderData : MonoBehaviour
             Debug.LogError("Error al enviar datos DEL INICIO DE LA SESION al servidor: " + www.error);
         }
     }
-    // --------------------------------------------------------------------------------------------------------------------
-    // -------------------------------------------------------------------------------------------------------------------- Send EndSessionTime
-
-
-    public void SendSessionEndDate(DateTime endSessionTime)
-    {
-        StartCoroutine(SendSessionTimeStampEnd(endSessionTime));
-    }
-
-    private IEnumerator SendSessionTimeStampEnd(DateTime endSessionTime)
-    {
-        // Define un formato de fecha personalizado
-        string formatoPersonalizado = "yyyy-MM-dd HH:mm:ss";
-
-        // Convierte la fecha en una cadena con el formato personalizado
-        string fechaFormateada = endSessionTime.ToString(formatoPersonalizado);
-
-        // Crear un formulario para los datos
-        WWWForm form = new WWWForm();
-        form.AddField("endSessionTime", fechaFormateada);
-
-        // Crear una solicitud POST con el formulario
-        UnityWebRequest www = UnityWebRequest.Post(serverURL, form);
-
-
-        // Enviar la solicitud al servidor
-        yield return www.SendWebRequest();
-
-        // Verificar si hubo un error en la solicitud
-        if (www.result == UnityWebRequest.Result.Success)
-        {
-            Debug.Log("Datos DEL FINAL DE LA SESION enviados con exito.");
-
-            //string userId_String = www.downloadHandler.text;
-            //uint userId_uInt;
-
-            //if (uint.TryParse(userId_String, out userId_uInt))
-            //{
-            //    // La conversión fue exitosa, y valorComoInt contiene el valor entero.
-            //    CallbackEvents.OnAddPlayerCallback?.Invoke(userId_uInt);
-            //}
-            //else
-            //{
-            //    // La conversión falló, puedes manejar el error aquí.
-            //    Debug.Log(www.downloadHandler.text);
-            //}
-
-        }
-        else
-        {
-            Debug.LogError("Error al enviar datos DEL FINAL DE LA SESION al servidor: " + www.error);
-        }
-    }
 }
+    // --------------------------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------------------------------- Send EndSessionTim
