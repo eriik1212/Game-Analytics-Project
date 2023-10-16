@@ -95,56 +95,57 @@ public class SenderData : MonoBehaviour
         // Convierte la fecha en una cadena con el formato personalizado
         string fechaFormateada = sessionTime.ToString(formatoPersonalizado);
 
-        // Crear un formulario para los datos
-        WWWForm form = new WWWForm();
-
         if (startingSessionBool)
         {
             startSessionTime = fechaFormateada;
             startingSessionBool = false;
         }
-
-        else
+        if(!startingSessionBool)
         {
+            // Crear un formulario para los datos
+            WWWForm form = new WWWForm();
+
             endSessionTime = fechaFormateada;
             
             form.AddField("startSessionTime", startSessionTime);
-            form.AddField("endSessionTime", endSessionTime);
+            form.AddField("endSessionTime", fechaFormateada);
 
-            startingSessionBool = true;
+            
+            // Crear una solicitud POST con el formulario
+            UnityWebRequest www = UnityWebRequest.Post(serverURL, form);
+
+            // Enviar la solicitud al servidor
+            yield return www.SendWebRequest();
+
+            // Verificar si hubo un error en la solicitud
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Datos DEL INICIO DE LA SESION enviados con exito al servidor.");
+                Debug.Log(www.downloadHandler.text);
+
+                //string userId_String = www.downloadHandler.text;
+                //uint userId_uInt;
+
+                //if (uint.TryParse(userId_String, out userId_uInt))
+                //{
+                //    // La conversión fue exitosa, y valorComoInt contiene el valor entero.
+                //    CallbackEvents.OnAddPlayerCallback?.Invoke(userId_uInt);
+                //}
+                //else
+                //{
+                //    // La conversión falló, puedes manejar el error aquí.
+                //    Debug.Log(www.downloadHandler.text);
+                //}
+
+                startingSessionBool = true;
+            }
+            else
+            {
+                Debug.LogError("Error al enviar datos DEL INICIO DE LA SESION al servidor: " + www.error);
+            }
+
         }
 
-        // Crear una solicitud POST con el formulario
-        UnityWebRequest www = UnityWebRequest.Post(serverURL, form);
-
-
-        // Enviar la solicitud al servidor
-        yield return www.SendWebRequest();
-
-        // Verificar si hubo un error en la solicitud
-        if (www.result == UnityWebRequest.Result.Success)
-        {
-            Debug.Log("Datos DEL INICIO DE LA SESION enviados con exito al servidor.");
-
-            //string userId_String = www.downloadHandler.text;
-            //uint userId_uInt;
-
-            //if (uint.TryParse(userId_String, out userId_uInt))
-            //{
-            //    // La conversión fue exitosa, y valorComoInt contiene el valor entero.
-            //    CallbackEvents.OnAddPlayerCallback?.Invoke(userId_uInt);
-            //}
-            //else
-            //{
-            //    // La conversión falló, puedes manejar el error aquí.
-            //    Debug.Log(www.downloadHandler.text);
-            //}
-
-        }
-        else
-        {
-            Debug.LogError("Error al enviar datos DEL INICIO DE LA SESION al servidor: " + www.error);
-        }
     }
 }
     // --------------------------------------------------------------------------------------------------------------------

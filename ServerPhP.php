@@ -11,9 +11,10 @@ if (!$connection) {
   die("Error al conectar a la base de datos: " . mysqli_connect_error());
 }
 
+//$lastUserID = null; // Inicializa la variable fuera de los bloques if
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   // ------------------------------------------------------------------------------ USER
-  // ---------------------------------------------------- Nombre
     if (isset($_POST["Name"]) && isset($_POST["Age"]) && isset($_POST["Gender"]) && isset($_POST["Country"]) && isset($_POST["Date"])) {
 
       $name = $_POST["Name"];
@@ -48,14 +49,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       // INSERT INTO
       $sql = "INSERT INTO `Sessions`(`Start`, `End`, user_id) VALUES ('$startSessionTime', '$endSessionTime' , 3)";
 
+      echo "Form2 valido";
     if ($connection->query($sql) === TRUE) {
-      // Obtiene la última ID generada
+      // Obtiene la ultima ID generada
       $lastSessionID = $connection->insert_id;
   
-      // Imprime la última ID generada
+      // Imprime la ultima ID generada
       //echo $lastSessionID;
     } else {
-      // Manejar errores de inserción
+      // Manejar errores de insercion
       echo "Error al crear el registro: " . $connection->error;
     }
     // ------------------------------------------------------------------------------
