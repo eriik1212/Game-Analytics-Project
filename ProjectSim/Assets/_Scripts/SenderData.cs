@@ -15,6 +15,7 @@ public class SenderData : MonoBehaviour
         Simulator.OnNewPlayer += SendData;
         Simulator.OnNewSession += SendSessionTime;
         Simulator.OnEndSession += SendSessionTime;
+        Simulator.OnBuyItem += SendbuyInfo;
 
     }
     private void OnDisable()
@@ -22,6 +23,7 @@ public class SenderData : MonoBehaviour
         Simulator.OnNewPlayer -= SendData;
         Simulator.OnNewSession -= SendSessionTime;
         Simulator.OnEndSession -= SendSessionTime;
+        Simulator.OnBuyItem -= SendbuyInfo;
 
     }
 
@@ -101,17 +103,17 @@ public class SenderData : MonoBehaviour
             startSessionTime = fechaFormateada;
             startingSessionBool = false;
         }
-        if(!startingSessionBool)
+        if (!startingSessionBool)
         {
             // Crear un formulario para los datos
             WWWForm form = new WWWForm();
 
             endSessionTime = fechaFormateada;
-            
+
             form.AddField("startSessionTime", startSessionTime);
             form.AddField("endSessionTime", fechaFormateada);
 
-            
+
             // Crear una solicitud POST con el formulario
             UnityWebRequest www = UnityWebRequest.Post(serverURL, form);
 
@@ -150,6 +152,70 @@ public class SenderData : MonoBehaviour
         }
 
     }
-}
     // --------------------------------------------------------------------------------------------------------------------
-    // -------------------------------------------------------------------------------------------------------------------- Send EndSessionTim
+    // -------------------------------------------------------------------------------------------------------------------- Buying items
+
+    public void SendbuyInfo(int itemID, DateTime dateBuy)
+    {
+        StartCoroutine(SendBuyingData(itemID, dateBuy));
+    }
+
+    private IEnumerator SendBuyingData(int itemID, DateTime dateBuy)
+    {
+        // Define un formato de fecha personalizado
+        string formatoPersonalizado = "yyyy-MM-dd HH:mm:ss";
+
+        // Convierte la fecha en una cadena con el formato personalizado
+        string fechaFormateada = dateBuy.ToString(formatoPersonalizado);
+
+
+        // Crear un formulario para los datos
+        WWWForm formShop = new WWWForm();
+
+        formShop.AddField("itemID", itemID);
+        formShop.AddField("buyTime", fechaFormateada);
+
+
+        // Crear una solicitud POST con el formulario
+        UnityWebRequest www = UnityWebRequest.Post(serverURL, formShop);
+
+        // Enviar la solicitud al servidor
+        yield return www.SendWebRequest();
+
+        // Verificar si hubo un error en la solicitud
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log("Datos DE LA COMPRA enviados con exito al servidor.");
+
+            CallbackEvents.OnNewSessionCallback?.Invoke(1);
+            Debug.Log(www.downloadHandler.text);
+
+            //string userId_String = www.downloadHandler.text;
+            //uint userId_uInt;
+
+            //if (uint.TryParse(userId_String, out userId_uInt))
+            //{
+            //    // La conversión fue exitosa, y valorComoInt contiene el valor entero.
+            //    CallbackEvents.OnAddPlayerCallback?.Invoke(userId_uInt);
+            //}
+            //else
+            //{
+            //    // La conversión falló, puedes manejar el error aquí.
+            //    Debug.Log(www.downloadHandler.text);
+            //}
+
+            
+        }
+        else
+        {
+            Debug.LogError("Error al enviar datos DE LA COMPRA al servidor: " + www.error);
+        }
+
+
+    }
+
+
+
+}
+
+
