@@ -13,7 +13,9 @@ public class SenderData : MonoBehaviour
     // Crear un formulario para los datos
     WWWForm formSessions;
 
+    // IDs
     uint userId_uInt;
+    uint sessionId_uInt;
 
     private void OnEnable()
     {
@@ -68,7 +70,6 @@ public class SenderData : MonoBehaviour
 
             string userId_String = www.downloadHandler.text;
 
-
             if (uint.TryParse(userId_String, out userId_uInt))
             {
                 // La conversión fue exitosa, y valorComoInt contiene el valor entero.
@@ -118,22 +119,20 @@ public class SenderData : MonoBehaviour
         {
             Debug.Log("Datos DEL INICIO DE LA SESION enviados con exito al servidor.");
 
-            CallbackEvents.OnNewSessionCallback?.Invoke(1);
-            Debug.Log(www.downloadHandler.text);
+            string sessionId_String = www.downloadHandler.text;
 
-            //string userId_String = www.downloadHandler.text;
-            //uint userId_uInt;
+            if (uint.TryParse(sessionId_String, out sessionId_uInt))
+            {
+                // La conversión fue exitosa, y valorComoInt contiene el valor entero.
+                CallbackEvents.OnNewSessionCallback?.Invoke(sessionId_uInt);
+                Debug.Log(www.downloadHandler.text);
 
-            //if (uint.TryParse(userId_String, out userId_uInt))
-            //{
-            //    // La conversión fue exitosa, y valorComoInt contiene el valor entero.
-            //    CallbackEvents.OnAddPlayerCallback?.Invoke(userId_uInt);
-            //}
-            //else
-            //{
-            //    // La conversión falló, puedes manejar el error aquí.
-            //    Debug.Log(www.downloadHandler.text);
-            //}
+            }
+            else
+            {
+                // La conversión falló, puedes manejar el error aquí.
+                Debug.Log(www.downloadHandler.text);
+            }
 
         }
         else
@@ -141,8 +140,6 @@ public class SenderData : MonoBehaviour
             Debug.LogError("Error al enviar datos DEL INICIO DE LA SESION al servidor: " + www.error);
 
         }
-
-        //}
 
     }
 
@@ -173,22 +170,8 @@ public class SenderData : MonoBehaviour
 
             Debug.Log("Datos DEL FIN DE LA SESSION enviados con exito al servidor.");
 
-            CallbackEvents.OnEndSessionCallback?.Invoke(1);
+            CallbackEvents.OnEndSessionCallback?.Invoke(sessionId_uInt);
             Debug.Log(www.downloadHandler.text);
-
-            //string userId_String = www.downloadHandler.text;
-            //uint userId_uInt;
-
-            //if (uint.TryParse(userId_String, out userId_uInt))
-            //{
-            //    // La conversión fue exitosa, y valorComoInt contiene el valor entero.
-            //    CallbackEvents.OnAddPlayerCallback?.Invoke(userId_uInt);
-            //}
-            //else
-            //{
-            //    // La conversión falló, puedes manejar el error aquí.
-            //    Debug.Log(www.downloadHandler.text);
-            //}
 
         }
         else
@@ -196,8 +179,6 @@ public class SenderData : MonoBehaviour
             Debug.LogError("Error al enviar datos DEL FIN DE LA SESION al servidor: " + www.error);
 
         }
-
-        //}
 
     }
     // --------------------------------------------------------------------------------------------------------------------
@@ -221,9 +202,6 @@ public class SenderData : MonoBehaviour
         WWWForm formShop = new WWWForm();
 
         //La tabla requiere de los siguientes campos: ShoppingID -> (itemID??) , User-ID, Session-ID, Date, MoneySpent 
-
-        formShop.AddField("itemID", itemID);
-        formShop.AddField("buyTime", fechaFormateada);
 
         float itemPrice = 0;
 
@@ -249,6 +227,10 @@ public class SenderData : MonoBehaviour
 
         }
 
+        formShop.AddField("moneySpent", itemPrice.ToString());
+        formShop.AddField("buyTime", fechaFormateada);
+        formShop.AddField("userID", (int)userId_uInt);
+        formShop.AddField("sessionID", (int)sessionId_uInt);
 
         // Crear una solicitud POST con el formulario
         UnityWebRequest www = UnityWebRequest.Post(serverURL, formShop);
@@ -261,7 +243,7 @@ public class SenderData : MonoBehaviour
         {
             Debug.Log("Datos DE LA COMPRA enviados con exito al servidor.");
 
-            CallbackEvents.OnNewSessionCallback?.Invoke(1);
+            CallbackEvents.OnItemBuyCallback?.Invoke();
             Debug.Log(www.downloadHandler.text);
 
             //string userId_String = www.downloadHandler.text;

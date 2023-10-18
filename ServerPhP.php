@@ -26,10 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
       if ($connection->query($sql) === TRUE) {
         // Obtiene la última ID generada
-        $lastUserID = $connection->insert_id;
+        $printID = $connection->insert_id;
     
         // Imprime la última ID generada
-        echo $lastUserID;
+        echo $printID;
       } else {
         // Manejar errores de inserción
         echo "Error al crear el registro: " . $connection->error;
@@ -51,10 +51,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       echo "Form2 valido";
     if ($connection->query($sql) === TRUE) {
       // Obtiene la ultima ID generada
-      $lastSessionID = $connection->insert_id;
+      $printID = $connection->insert_id;
   
       // Imprime la ultima ID generada
-      //echo $lastSessionID;
+      echo $printID;
     } else {
       // Manejar errores de insercion
       echo "Error al crear el registro: " . $connection->error;
