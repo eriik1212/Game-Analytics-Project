@@ -172,8 +172,34 @@ public class SenderData : MonoBehaviour
         // Crear un formulario para los datos
         WWWForm formShop = new WWWForm();
 
+        //La tabla requiere de los siguientes campos: ShoppingID -> (itemID??) , User-ID, Session-ID, Date, MoneySpent 
+
         formShop.AddField("itemID", itemID);
         formShop.AddField("buyTime", fechaFormateada);
+
+        float itemPrice = 0;
+
+       switch (itemID)
+        {
+            case 1:
+                itemPrice = 0.99f;
+                break;
+            case 2:
+                itemPrice = 1.99f;
+                break;
+            case 3:
+                itemPrice = 9.99f;
+                break;
+            case 4:
+                itemPrice = 49.99f;
+                break;
+            case 5:
+                itemPrice = 99.99f;
+                break;
+   
+            default: break;
+
+        }
 
 
         // Crear una solicitud POST con el formulario
