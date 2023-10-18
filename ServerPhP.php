@@ -11,8 +11,6 @@ if (!$connection) {
   die("Error al conectar a la base de datos: " . mysqli_connect_error());
 }
 
-$lastUserID = null; // Inicializa la variable fuera de los bloques if
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   // ------------------------------------------------------------------------------ USER
     if (isset($_POST["Name"]) && isset($_POST["Age"]) && isset($_POST["Gender"]) && isset($_POST["Country"]) && isset($_POST["Date"])) {
@@ -42,12 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
     // ------------------------------------------------------------------------------ SESSION
 
-    else if (isset($_POST["startSessionTime"]) && isset($_POST["endSessionTime"])) {
+    else if (isset($_POST["userID"]) &&isset($_POST["startSessionTime"]) && isset($_POST["endSessionTime"])) {
       $startSessionTime = $_POST["startSessionTime"];
       $endSessionTime = $_POST["endSessionTime"];
+      $userID = $_POST["userID"];
     
       // INSERT INTO
-      $sql = "INSERT INTO `Sessions`(`Start`, `End`, user_id) VALUES ('$startSessionTime', '$endSessionTime' , 3)";
+      $sql = "INSERT INTO `Sessions`(`Start`, `End`, user_id) VALUES ('$startSessionTime', '$endSessionTime' , '$userID')";
 
       echo "Form2 valido";
     if ($connection->query($sql) === TRUE) {
