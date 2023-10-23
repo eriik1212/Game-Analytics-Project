@@ -12,6 +12,7 @@ public class SenderData : MonoBehaviour
 
     // Crear un formulario para los datos
     WWWForm formSessions;
+    WWWForm formEndSessions;
 
     // IDs
     uint userId_uInt;
@@ -67,6 +68,7 @@ public class SenderData : MonoBehaviour
         if (www.result == UnityWebRequest.Result.Success)
         {
             Debug.Log("Datos DEL USER enviados con exito al servidor.");
+            Debug.Log(www.downloadHandler.text);
 
             string userId_String = www.downloadHandler.text;
 
@@ -79,6 +81,7 @@ public class SenderData : MonoBehaviour
             else
             {
                 // La conversión falló, puedes manejar el error aquí.
+                Debug.Log("Error USERID");
                 Debug.Log(www.downloadHandler.text);
             }
 
@@ -156,10 +159,12 @@ public class SenderData : MonoBehaviour
         // Convierte la fecha en una cadena con el formato personalizado
         string fechaFormateada = sessionTime.ToString(formatoPersonalizado);
 
-        formSessions.AddField("endSessionTime", fechaFormateada);
+        formEndSessions = new WWWForm();
+        formEndSessions.AddField("endSessionTime", fechaFormateada);
+        formEndSessions.AddField("sessionID", (int)sessionId_uInt);
 
         // Crear una solicitud POST con el formulario
-        UnityWebRequest www = UnityWebRequest.Post(serverURL, formSessions);
+        UnityWebRequest www = UnityWebRequest.Post(serverURL, formEndSessions);
 
         // Enviar la solicitud al servidor
         yield return www.SendWebRequest();

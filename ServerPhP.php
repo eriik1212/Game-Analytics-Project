@@ -21,19 +21,44 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $country = $_POST["Country"];
       $date = $_POST["Date"];
 
+      // ---------------------------------------------------------- LAST CODE (NOT WORKING, HERE IN CASE) ----------------------------------------------------------
+      {
       // INSERT INTO
-      $sql = "INSERT INTO User (Username, Age, Gender, Country, FirstLoginDate) VALUES ('$name', '$age', '$gender', '$country', '$date')";
+      // $sql = "INSERT INTO `User` (`Username`, `Age`, `Gender`, `Country`, `FirstLoginDate`) VALUES ('$name', '$age', '$gender', '$country', '$date')";
 
-      if ($connection->query($sql) === TRUE) {
-        // Obtiene la última ID generada
-        $printID = $connection->insert_id;
+      // if ($connection->query($sql) === TRUE) {
+      //   // Obtiene la última ID generada
+      //   $printID = $connection->insert_id;
     
-        // Imprime la última ID generada
-        echo $printID;
-      } else {
-        // Manejar errores de inserción
-        echo "Error al crear el registro: " . $connection->error;
+      //   // Imprime la última ID generada
+      //   echo $printID;
+      // } else {
+      //   // Manejar errores de inserción
+      //   echo "Error al crear el registro: " . $connection->error;
+      // }
       }
+
+      // ---------------------------------------------------------- NEW CODE (ACTUALLY WORKING) ----------------------------------------------------------
+
+      // Consulta preparada
+      $stmt = $connection->prepare("INSERT INTO `User` (`Username`, `Age`, `Gender`, `Country`, `FirstLoginDate`) VALUES (?, ?, ?, ?, ?)");
+      $stmt->bind_param("sisss", $name, $age, $gender, $country, $date);
+
+      if ($stmt->execute()) {
+          // Obtiene la última ID generada
+          $printID = $stmt->insert_id;
+    
+          // Imprime la última ID generada
+         echo $printID;
+      }  else {
+          // Manejar errores de inserción
+         echo "Error al crear el registro: " . $stmt->error;
+      }
+
+      // Cerrar la declaración
+      $stmt->close();
+      
+      // --------------------------------------------------------------------------------------------------------------------
 
     } 
     // ------------------------------------------------------------------------------
@@ -57,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       echo $printID;
     } else {
       // Manejar errores de insercion
-      echo "Error al crear el registro: " . $connection->error;
+      //echo "Error al crear el registro: " . $connection->error;
     }
     // ------------------------------------------------------------------------------
   }
@@ -69,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $sessionID = $_POST["sessionID"];
   
     // INSERT INTO
-    $sql = "INSERT INTO `Shopping` (`User-ID`, `Session-ID`, `Date`,  `MoneySpend`) VALUES ('$userID', '$sessionID' , '$buyTime', '$moneySpent')";
+    $sql = "INSERT INTO `Shopping` (`User-ID`, `Session-ID`, `Date`, `MoneySpend`) VALUES ('$userID', '$sessionID' , '$buyTime', '$moneySpent')";
 
     //echo "Form3 valido";
 
@@ -81,24 +106,38 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     echo $printID;
   } else {
     // Manejar errores de insercion
-    echo "Error al crear el registro: " . $connection->error;
+    //echo "Error al crear el registro: " . $connection->error;
   }
-  // ------------------------------------------------------------------------------
-}
-elseif (isset($_POST["endSessionTime"])) {
-  $endSessionTime = $_POST["endSessionTime"];
+  // ------------------------------------------------------------------------------ END SESSION
+  }
+  else if (isset($_POST["endSessionTime"]) && isset($_POST["sessionID"])) {
+    $endSessionTime = $_POST["endSessionTime"];
+    $sessionID = $_POST["sessionID"];
 
-  // ADD END SESSION TIME
-  $sql = "UPDATE `Sessions` SET `End` = '$endSessionTime'";
+    // ADD END SESSION TIME
+    $sql = "UPDATE `Sessions` SET `End` = '$endSessionTime' WHERE `SessionID` = '$sessionID'";
 
-  //echo "Form4 valido";
-}
+    //echo "Form4 valido";
+
+    if ($connection->query($sql) === TRUE) {
+      // Obtiene la ultima ID generada
+      $printID = $connection->insert_id;
+  
+      // Imprime la ultima ID generada
+      echo $printID;
+    } else {
+      // Manejar errores de insercion
+      //echo "Error al crear el registro: " . $connection->error;
+    }
+
+  }
   else 
   {
-    echo "Form no valido";
+    //echo "Form no valido";
   }
 
-    // CLOSE
-    mysqli_close($connection);
+  // CLOSE
+  mysqli_close($connection);
+
 }
 ?>
